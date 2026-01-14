@@ -1,9 +1,14 @@
+import { Box, Container, Typography } from '@mui/material'
 
 function App() {
   return (
-    <div>
-      <h1>Hello World!</h1>
-    </div>
+    <Container>
+      <Box>
+        <Typography variant="h2" component="h1" sx={{ fontSize: 80, color: 'primary.main' }}>
+          FlightFront
+        </Typography>
+      </Box>
+    </Container>
   )
 }
 
