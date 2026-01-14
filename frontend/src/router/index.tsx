@@ -1,11 +1,11 @@
-import { createBrowserRouter } from 'react-router-dom'
-import { Layout } from '../components/layout/layout'
-import { HomePage } from '../pages/HomePage'
-import { NotFoundPage } from '../pages/NotFoundPage'
+import { createBrowserRouter } from "react-router-dom"
+import { Layout } from "../components/layout/layout"
+import { HomePage } from "../pages/HomePage"
+import { NotFoundPage } from "../pages/NotFoundPage"
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <Layout />,
     children: [
       {
@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: '*',
+        path: "*",
         element: <NotFoundPage />,
       },
     ],

@@ -21,7 +21,7 @@ export default defineConfig([
     },
     rules: {
       // Formatting rules
-      quotes: ["error", "single"],
+      quotes: ["error", "double"],
       semi: ["error", "never"],
       indent: ["error", 2],
       "comma-dangle": ["error", "always-multiline"],

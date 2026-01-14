@@ -1,11 +1,11 @@
-import { Box, Container, Typography, Button, Stack } from '@mui/material'
-import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff'
+import { Box, Container, Typography, Button, Stack } from "@mui/material"
+import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff"
 
 export function HomePage() {
   return (
     <Container>
-      <Box sx={{ my: 8, textAlign: 'center' }}>
-        <FlightTakeoffIcon sx={{ fontSize: 80, color: 'primary.main', mb: 2 }} />
+      <Box sx={{ my: 8, textAlign: "center" }}>
+        <FlightTakeoffIcon sx={{ fontSize: 80, color: "primary.main", mb: 2 }} />
         <Typography variant="h2" component="h1" gutterBottom color="primary">
           FlightFront
         </Typography>
