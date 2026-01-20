@@ -5,30 +5,30 @@ export const theme = createTheme({
     mode: "light",
 
     primary: {
-      main: "#0B3C5D",
-      light: "#2E5F80",
-      dark: "#06263B",
-      contrastText: "#FFFFFF",
+      main: "#7653ff",
+      light: "#9579ff",
+      dark: "#5c42cc",
+      contrastText: "#ffffff",
     },
 
     secondary: {
-      main: "#F4B400",
-      light: "#FFD24D",
-      dark: "#C49000",
-      contrastText: "#0B1C2D",
+      main: "#f76031",
+      light: "#ff8a61",
+      dark: "#d64a1f",
+      contrastText: "#ffffff",
     },
 
     background: {
-      default: "#F5F7FA",
-      paper: "#FFFFFF",
+      default: "#ffffff",
+      paper: "#f5f5f5",
     },
 
     text: {
-      primary: "#0B1C2D",
-      secondary: "#4A5D73",
+      primary: "#1a1a1a",
+      secondary: "#666666",
     },
   },
   typography: {
-    fontFamily: ["Roboto", "Arial", "sans-serif"].join(","),
+    fontFamily: ["Alberto Sans", "Roboto", "Arial", "sans-serif"].join(","),
   },
 })
