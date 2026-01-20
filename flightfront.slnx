@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Flightfront.api/Flightfront.api.csproj" />
+  <Project Path="Flightfront.domain/Flightfront.domain.csproj" />
+</Solution>
