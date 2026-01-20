@@ -14,7 +14,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <RouterProvider router={router}/>
+      <RouterProvider router={router} />
     </ThemeProvider>
-  </StrictMode>,
+  </StrictMode>
 )
