@@ -1,21 +1,31 @@
+using Flightfront.api.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddHttpClient<MetarService>((sp, client) =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+
+    client.BaseAddress = new Uri(config["CheckWx:BaseUrl"]!);
+    client.DefaultRequestHeaders.Add("X-API-Key", config["CheckWx:ApiKey"]);
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
 app.MapControllers();
