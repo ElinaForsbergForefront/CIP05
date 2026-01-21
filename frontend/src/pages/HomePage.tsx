@@ -1,5 +1,6 @@
 import { Box, Container, Typography, Button, Stack } from "@mui/material"
 import FlightTakeoffIcon from "@mui/icons-material/FlightTakeoff"
+import { Link as RouterLink } from "react-router-dom"
 
 export function HomePage() {
   return (
@@ -13,7 +14,13 @@ export function HomePage() {
           Flyg Klubb
         </Typography>
         <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-          <Button variant="contained" color="primary" size="large">
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            component={RouterLink}
+            to="/metar"
+          >
             Get Started
           </Button>
         </Stack>
