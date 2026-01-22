@@ -9,12 +9,15 @@ import "@fontsource/roboto/700.css"
 import CssBaseline from "@mui/material/CssBaseline"
 import { RouterProvider } from "react-router-dom"
 import { router } from "./router/index.tsx"
+import { QueryProvider } from "./providers/QueryProvider.tsx"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <RouterProvider router={router} />
+      <QueryProvider>
+        <RouterProvider router={router} />
+      </QueryProvider>
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode>,
 )
