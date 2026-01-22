@@ -5,12 +5,16 @@ interface AutoCompleteFieldProps {
   icaoCodeOptions: typeof icaoCodeOptions
   icaoCode: string
   setIcaoCode: (code: string) => void
+  error?: boolean
+  helperText?: string
 }
 
 export const AutoCompleteField = ({
   icaoCodeOptions,
   icaoCode,
   setIcaoCode,
+  error,
+  helperText,
 }: AutoCompleteFieldProps) => {
   return (
     <Autocomplete
@@ -44,6 +48,8 @@ export const AutoCompleteField = ({
         <TextField
           {...params}
           label="Choose ICAO Code"
+          error={error}
+          helperText={helperText}
           slotProps={{
             htmlInput: {
               ...params.inputProps,
