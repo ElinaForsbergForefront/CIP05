@@ -1,10 +1,11 @@
-import { Box, Button, Container, Paper, Stack, Typography } from "@mui/material"
+import { Box, Button, CircularProgress, Container, Paper, Stack, Typography } from "@mui/material"
 import { useState } from "react"
 
 import icaoCodeOptions from "../lib/icao_mock"
-import { AutoCompleteField } from "@/components/forms/AutocompleteField"
+import { AutoCompleteField } from "@/components/forms/AutoCompleteField"
 import { MetarInput } from "@/components/forms/MetarInput"
 import { InputModeToggle } from "@/components/forms/InputModeToggle"
+import { useGetApiMetarIcao } from "@/api/generated/metar/metar"
 
 type InputMode = "icao" | "metar"
 
@@ -12,10 +13,21 @@ export function MetarPage() {
   const [inputMode, setInputMode] = useState<InputMode>("icao")
   const [icaoCode, setIcaoCode] = useState("")
   const [metarString, setMetarString] = useState("")
+  const [searchIcao, setSearchIcao] = useState("")
+
+  // GET METAR Data
+  const { data, isLoading, isError, error, refetch } = useGetApiMetarIcao(searchIcao, {
+    query: {
+      enabled: false,
+    },
+  })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Connect to backend
+    if (inputMode === "icao" && icaoCode.length === 4) {
+      setSearchIcao(icaoCode.toUpperCase())
+      setTimeout(() => refetch(), 0)
+    }
   }
 
   return (
@@ -51,6 +63,10 @@ export function MetarPage() {
                     icaoCodeOptions={icaoCodeOptions}
                     icaoCode={icaoCode}
                     setIcaoCode={setIcaoCode}
+                    error={isError}
+                    helperText={
+                      isError ? error?.message || "Failed to fetch METAR data" : undefined
+                    }
                   />
                 ) : (
                   <MetarInput metarString={metarString} setMetarString={setMetarString} />
@@ -65,10 +81,25 @@ export function MetarPage() {
                     inputMode === "icao" ? icaoCode.length !== 4 : metarString.trim().length === 0
                   }
                 >
-                  Decode METAR
+                  {isLoading ? <CircularProgress size={24} color="inherit" /> : "Decode METAR"}
                 </Button>
               </Stack>
             </Box>
+            <>
+              {data && (
+                <Paper sx={{ p: 2, bgcolor: "success.light" }}>
+                  <Typography variant="h6" gutterBottom>
+                    METAR Result for {searchIcao}:
+                  </Typography>
+                  <Typography
+                    component="pre"
+                    sx={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                  >
+                    {JSON.stringify(data, null, 2)}
+                  </Typography>
+                </Paper>
+              )}
+            </>
           </Stack>
         </Paper>
       </Box>
