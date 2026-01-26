@@ -6,13 +6,13 @@ namespace Flightfront.domain.Metar
 {
     public class ProcessedMetar
     {
-        public String Station { get; set; } = string.Empty;
-        public String Time { get; set; } = string.Empty;
-        public String Wind { get; set; } = string.Empty;
-        public String Visibility { get; set; } = string.Empty;
-        public String Weather { get; set; } = string.Empty;
-        public String[] Clouds { get; set; } = Array.Empty<String>();
-        public String Temperature { get; set; } = string.Empty;
-        public String AirPressure { get; set; } = string.Empty;
+        public String Station { get; set; } = "-";
+        public String Time { get; set; } = "-";
+        public MetarWind Wind { get; set; } = new MetarWind();
+        public String Visibility { get; set; } = "-";
+        public String Weather { get; set; } = "-";
+        public MetarClouds[] Clouds { get; set; } = Array.Empty<MetarClouds>();
+        public MetarTemperature Temperature { get; set; } = new MetarTemperature();
+        public String AirPressure { get; set; } = "-";
     }
 }

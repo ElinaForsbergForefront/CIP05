@@ -37,36 +37,33 @@ namespace Flightfront.application.Features.Metar.Decode
                         break;
                     case SegmentType.Station:
                         data.Station = (segment);
-                        Console.WriteLine("Station: " + data.Station);
                         break;
                     case SegmentType.Time:
-                        data.Time = (DecoderUtil.TranslateTime(segment));
+                        data.Time = DecoderUtil.TranslateTime(segment);
                         break;
                     case SegmentType.Wind:
-                        data.Wind =  (DecoderUtil.TranslateWind(segment));
+                        data.Wind =  DecoderUtil.TranslateWind(segment);
                         break;
                     case SegmentType.Auto:
                         // Ignore
                         break;
                     case SegmentType.Visibility:
-                        data.Visibility = (DecoderUtil.TranslateVisibility(segment));
+                        data.Visibility = DecoderUtil.TranslateVisibility(segment);
                         break;
                     case SegmentType.Clouds:
                         data.Clouds = data.Clouds.Concat(new[] { DecoderUtil.TranslateClouds(segment) }).ToArray();
                         break;
                     case SegmentType.Temperature:
-                        Console.WriteLine(segment);
-                        data.Temperature = (DecoderUtil.TranslateTemperatureDewPoint(segment));
-                        Console.WriteLine("temp = " + data.Temperature);
+                        data.Temperature = DecoderUtil.TranslateTemperatureDewPoint(segment);
                         break;
                     case SegmentType.AirPressure:
-                        data.AirPressure = (DecoderUtil.TranslateAirPressure(segment));
+                        data.AirPressure = DecoderUtil.TranslateAirPressure(segment);
                         break;
                     case SegmentType.Weather:
-                        data.Weather =  (segment);
+                        data.Weather = DecoderUtil.TranslateWeather(segment);
                         break;
-                    case SegmentType.Unknown:
-                        // Ignore other segments like BECMG, TEMPO, etc.
+                    default:
+                        // Unknown segment, ignore
                         break;
                 }
             }

@@ -1,4 +1,5 @@
-<Solution>
+﻿<Solution><PropertyGroup>  <UserSecretsId>3deea82f-e90b-40d4-a7cb-90865de04eaf</UserSecretsId>
+  </PropertyGroup>
   <Project Path="Flightfront.api/Flightfront.api.csproj" />
   <Project Path="Flightfront.application/Flightfront.application.csproj" Id="8b18753e-9740-4b22-adbb-38324b855978" />
   <Project Path="Flightfront.domain/Flightfront.domain.csproj" />

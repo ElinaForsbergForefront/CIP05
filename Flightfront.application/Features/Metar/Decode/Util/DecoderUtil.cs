@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Flightfront.domain.Metar;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Text;
 
 
@@ -12,20 +14,21 @@ namespace Flightfront.application.Features.Metar.Decode.Util
             String day = time.Substring(0, 2);
             String hour = time.Substring(2, 2);
             String minute = time.Substring(4, 2);
-            return day + " day(s) " + hour + " hour(s) " + minute + " minute(s) UTC";
+            return day + hour + minute;
         }
 
         public static String TranslateVisibility(String visibility)
         {
-            if (visibility.Length == 4 && int.TryParse(visibility, out int visMeters))
+            if (visibility.Length == 4 && int.TryParse(visibility, out int Meters))
             {
-                return visMeters + " meters";
+                return Meters.ToString();
             }
             return visibility;
         }
 
-        public static String TranslateWind(String wind)
+        public static MetarWind TranslateWind(String wind)
         {
+            var result = new MetarWind();
             // Example: 21009G19KT or 060V130 5000
             String direction = wind.Substring(0, 3);
             String speedPart = wind.Substring(3);
@@ -41,32 +44,78 @@ namespace Flightfront.application.Features.Metar.Decode.Util
             {
                 speed = speedPart.Replace("KT", "");
             }
-            String result = "Direction: " + direction + "°, Speed: " + speed + " KT";
+            result.Direction = direction;
+            result.Speed = speed;
             if (!string.IsNullOrEmpty(gusts))
             {
-                result += ", Gusts: " + gusts + " KT";
+                result.Gusts = gusts;
             }
             return result;
         }
 
 
-        public static String TranslateTemperatureDewPoint(String tempDewPoint)
+        public static MetarTemperature TranslateTemperatureDewPoint(String tempDewPoint)
         {
             var parts = tempDewPoint.Split('%');
             if (parts.Length == 2)
             {
                 String temperature = parts[0];
-                String dewPoint = parts[1];
-                return "Temperature: " + temperature + "°C, Dew Point: " + dewPoint + "°C";
+                String half = parts[1];
+                String dewPoint = "";
+
+                //WILL BE MOVED
+                if (half.Contains("M"))
+                {
+                    dewPoint = "-";
+                    dewPoint += half.Substring(half.Length-2);
+                }
+                else
+                {
+                    dewPoint += half.Substring(half.Length - 2);
+                }
+                return ( new MetarTemperature
+                {
+                    Temperature = temperature,
+                    DewPoint = dewPoint
+                });
             }
-            return tempDewPoint;
+            return ( new MetarTemperature
+            {
+                Temperature = tempDewPoint,
+                DewPoint = "-"
+            });
         }
 
 
         public static String TranslateWeather(String weather)
         {
-            // Example: -RA, +SN, FG
-            return weather;
+            // BEHÖVER VI ALLA TYP 30 VÄDERKODER? PLZ NO
+            // WILL BE MOVED
+            switch (weather)
+            {
+                case "-RA":
+                    return "Light Rain";
+                case "+RA":
+                    return "Heavy Rain";
+                case "RA":
+                    return "Rain";
+                case "-SN":
+                    return "Light Snow";
+                case "+SN":
+                    return "Heavy Snow";
+                case "SN":
+                    return "Snow";
+                case "FG":
+                    return "Fog";
+                case "BR":
+                    return "Mist";
+                case "DZ":
+                    return "Drizzle";
+                case "TS":
+                    return "Thunderstorm";
+                default:
+                    return "-";
+            }
         }
 
         public static String TranslateAirPressure(String airPressure)
@@ -74,23 +123,48 @@ namespace Flightfront.application.Features.Metar.Decode.Util
             if (airPressure.StartsWith("Q"))
             {
                 String pressureValue = airPressure.Substring(1);
-                return pressureValue + " hPa";
+                return pressureValue;
             }
             else if (airPressure.StartsWith("A"))
             {
                 String pressureValue = airPressure.Substring(1);
-                return pressureValue + " inHg";
+                return pressureValue;
             }
             return airPressure;
         }
 
-        public static String TranslateClouds(String cloudCondition)
+        public static MetarClouds TranslateClouds(String cloudCondition)
         {
-            // Example: FEW007, BKN014CB
-            String amount = cloudCondition.Substring(0, 3);
+            //HAVE TO GET DIFFERENT TYPES ASWELL :(((((
+            // WILL BE MOVED
+            String cover = cloudCondition.Substring(0, 3);
+            switch (cover)
+            {
+                case "FEW":
+                    cover = "Few";
+                    break;
+                case "SCT":
+                    cover = "Scattered";
+                    break;
+                case "BKN":
+                    cover = "Broken";
+                    break;
+                case "OVC":
+                    cover = "Overcast";
+                    break;
+                default:
+                    cover = "-";
+                    break;
+            }
             String height = cloudCondition.Substring(3, 3);
             String type = cloudCondition.Length > 6 ? cloudCondition.Substring(6) : "-";
-            return "Amount: " + amount + ", Height: " + height + " feet, Type: " + type;
+            return ( new MetarClouds
+            {
+                CloudCover = cover,
+                CloudHeight = height,
+                CloudType = type
+            });
+                
         }
 
     }
