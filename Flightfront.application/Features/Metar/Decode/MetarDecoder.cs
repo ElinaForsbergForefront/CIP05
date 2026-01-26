@@ -11,10 +11,10 @@ namespace Flightfront.application.Features.Metar.Decode
 {
     public class MetarDecoder
     {
-        public async Task<ProcessedMetar> decodeMetar(string metar)
+        public async Task<ProcessedMetar> getDecodedMetar(string metar)
 
         {
-
+            Console.WriteLine("Decoding METAR: " + metar);
             var data = new ProcessedMetar();
 
             // remove everything after BECMG or TEMPO
@@ -36,7 +36,8 @@ namespace Flightfront.application.Features.Metar.Decode
                         // Ignore
                         break;
                     case SegmentType.Station:
-                        data.Time = (segment);
+                        data.Station = (segment);
+                        Console.WriteLine("Station: " + data.Station);
                         break;
                     case SegmentType.Time:
                         data.Time = (DecoderUtil.TranslateTime(segment));
@@ -54,13 +55,15 @@ namespace Flightfront.application.Features.Metar.Decode
                         data.Clouds = data.Clouds.Concat(new[] { DecoderUtil.TranslateClouds(segment) }).ToArray();
                         break;
                     case SegmentType.Temperature:
-                        data.Time = (DecoderUtil.TranslateTemperatureDewPoint(segment));
+                        Console.WriteLine(segment);
+                        data.Temperature = (DecoderUtil.TranslateTemperatureDewPoint(segment));
+                        Console.WriteLine("temp = " + data.Temperature);
                         break;
                     case SegmentType.AirPressure:
                         data.AirPressure = (DecoderUtil.TranslateAirPressure(segment));
                         break;
                     case SegmentType.Weather:
-                        data.Time =  (segment);
+                        data.Weather =  (segment);
                         break;
                     case SegmentType.Unknown:
                         // Ignore other segments like BECMG, TEMPO, etc.
@@ -119,7 +122,7 @@ namespace Flightfront.application.Features.Metar.Decode
             if (segment.StartsWith("FEW") || segment.StartsWith("SCT") || segment.StartsWith("BKN") || segment.StartsWith("OVC"))
                 return SegmentType.Clouds;
 
-            if (segment.Contains("/"))
+            if (segment.Contains("%"))
                 return SegmentType.Temperature;
 
             if (segment.StartsWith("Q") || segment.StartsWith("A"))

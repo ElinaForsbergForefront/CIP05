@@ -52,7 +52,7 @@ namespace Flightfront.application.Features.Metar.Decode.Util
 
         public static String TranslateTemperatureDewPoint(String tempDewPoint)
         {
-            var parts = tempDewPoint.Split('/');
+            var parts = tempDewPoint.Split('%');
             if (parts.Length == 2)
             {
                 String temperature = parts[0];

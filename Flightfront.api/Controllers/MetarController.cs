@@ -29,11 +29,12 @@ public class MetarController : ControllerBase
         return Ok(new { rawMetar = metar });
     }
 
-    [HttpGet("{METAR}")]
-    public async Task<IActionResult> Decode(string metar)
+    [HttpGet("decode/{metar}")]
+    public async Task<IActionResult> GetMetar(string metar)
     {
+        Console.WriteLine($"Received METAR input: '{metar}'");
         var decoder = new MetarDecoder();
-        var decodedMetar = await decoder.decodeMetar(metar);
+        var decodedMetar = await decoder.getDecodedMetar(metar);
 
         if (decodedMetar is null)
             return NotFound("Kunde inte tolka METAR");
