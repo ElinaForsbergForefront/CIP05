@@ -14,8 +14,8 @@ public class AirportsController : ControllerBase
         _queryHandler = queryHandler;
     }
 
-    [HttpGet("search")]
-    public async Task<ActionResult<IReadOnlyList<AirportDto>>> Search([FromQuery] string? searchTerm)
+    [HttpGet("search/{searchTerm?}")]
+    public async Task<ActionResult<IReadOnlyList<AirportDto>>> Search(string? searchTerm)
     {
         var query = new SearchAirportsQuery(searchTerm);
         var airports = await _queryHandler.Handle(query);
