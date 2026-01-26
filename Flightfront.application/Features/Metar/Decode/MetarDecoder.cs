@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Flightfront.application.Features.Metar.Decode.Util;
@@ -11,7 +12,11 @@ namespace Flightfront.application.Features.Metar.Decode
     public class MetarDecoder
     {
         public async Task<ProcessedMetar> decodeMetar(string metar)
+
         {
+
+            var data = new ProcessedMetar();
+
             // remove everything after BECMG or TEMPO
             if (metar.Contains(" BECMG "))
             {
@@ -31,31 +36,31 @@ namespace Flightfront.application.Features.Metar.Decode
                         // Ignore
                         break;
                     case SegmentType.Station:
-                        Console.WriteLine("Station: " + segment);
+                        data.Time = (segment);
                         break;
                     case SegmentType.Time:
-                        Console.WriteLine("Time: " + DecoderUtil.TranslateTime(segment));
+                        data.Time = (DecoderUtil.TranslateTime(segment));
                         break;
                     case SegmentType.Wind:
-                        Console.WriteLine("wind: " + DecoderUtil.TranslateWind(segment));
+                        data.Wind =  (DecoderUtil.TranslateWind(segment));
                         break;
                     case SegmentType.Auto:
                         // Ignore
                         break;
                     case SegmentType.Visibility:
-                        Console.WriteLine("Visibility: " + DecoderUtil.TranslateVisibility(segment));
+                        data.Visibility = (DecoderUtil.TranslateVisibility(segment));
                         break;
                     case SegmentType.Clouds:
-                        Console.WriteLine("Clouds: " + DecoderUtil.TranslateClouds(segment));
+                        data.Clouds = data.Clouds.Concat(new[] { DecoderUtil.TranslateClouds(segment) }).ToArray();
                         break;
                     case SegmentType.Temperature:
-                        Console.WriteLine("Temperature: " + DecoderUtil.TranslateTemperatureDewPoint(segment));
+                        data.Time = (DecoderUtil.TranslateTemperatureDewPoint(segment));
                         break;
                     case SegmentType.AirPressure:
-                        Console.WriteLine("AirPressure: " + DecoderUtil.TranslateAirPressure(segment));
+                        data.AirPressure = (DecoderUtil.TranslateAirPressure(segment));
                         break;
                     case SegmentType.Weather:
-                        Console.WriteLine("Weather: " + segment);
+                        data.Time =  (segment);
                         break;
                     case SegmentType.Unknown:
                         // Ignore other segments like BECMG, TEMPO, etc.
@@ -65,14 +70,14 @@ namespace Flightfront.application.Features.Metar.Decode
 
             return await Task.FromResult(new ProcessedMetar
             {
-                Station = "Example",
-                Time = "Example",
-                Wind = "Example",
-                Visibility = "Example",
-                Weather = "Example",
-                Clouds = new string[] { "Example" },
-                Temperature = "Example",
-                AirPressure = "Example"
+                Station = data.Station,
+                Time = data.Time,
+                Wind = data.Wind,   
+                Visibility = data.Visibility,
+                Weather = data.Weather,
+                Clouds = data.Clouds,
+                Temperature = data.Temperature,
+                AirPressure = data.AirPressure
             });
 
         }
