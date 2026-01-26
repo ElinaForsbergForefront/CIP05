@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Flightfront.api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Flightfront.application.Features.Metar.Decode;
 namespace Flightfront.Api.Controllers;
 
 [ApiController]
@@ -26,5 +27,17 @@ public class MetarController : ControllerBase
             return NotFound("Ingen METAR hittades");
 
         return Ok(new { rawMetar = metar });
+    }
+
+    [HttpGet("{METAR}")]
+    public async Task<IActionResult> Decode(string metar)
+    {
+        var decoder = new MetarDecoder();
+        var decodedMetar = await decoder.decodeMetar(metar);
+
+        if (decodedMetar is null)
+            return NotFound("Kunde inte tolka METAR");
+
+        return Ok(decodedMetar);
     }
 }
