@@ -1,6 +1,6 @@
-<Solution><PropertyGroup>  <UserSecretsId>3deea82f-e90b-40d4-a7cb-90865de04eaf</UserSecretsId>
-  </PropertyGroup>
+<Solution>
   <Project Path="Flightfront.api/Flightfront.api.csproj" />
-  <Project Path="Flightfront.application/Flightfront.application.csproj" Id="8b18753e-9740-4b22-adbb-38324b855978" DisplayName="Flightfront.Application" />
+  <Project Path="FlightFront.Application/FlightFront.Application.csproj" Id="30cb66a5-a172-4313-9623-5365dc233f93" />
   <Project Path="Flightfront.domain/Flightfront.domain.csproj" />
+  <Project Path="FlightFront.Infrastructur/FlightFront.Infrastructure.csproj" Id="0b61da77-1201-4553-aaab-6f9436d958ef" />
 </Solution>

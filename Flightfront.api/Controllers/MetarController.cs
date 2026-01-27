@@ -1,32 +1,29 @@
-﻿using Flightfront.api.Services;
-using Microsoft.AspNetCore.Mvc;
-
-
-using Flightfront.api.Services;
+﻿using FlightFront.Application.Weather.Queries.GetMetar;
 using Microsoft.AspNetCore.Mvc;
 using Flightfront.Application.Features.Metar.Decode;
 namespace Flightfront.Api.Controllers;
 
 [ApiController]
-[Route("api/metar")]
+[Route("api/[controller]")]
 public class MetarController : ControllerBase
 {
-    private readonly MetarService _metarService;
+    private readonly GetMetarQueryHandler _queryHandler;
 
-    public MetarController(MetarService metarService)
+    public MetarController(GetMetarQueryHandler handler)
     {
-        _metarService = metarService;
+        _queryHandler = handler;
     }
 
     [HttpGet("{icao}")]
-    public async Task<IActionResult> Get(string icao)
+    public async Task<ActionResult<MetarDto>> GetByIcaoCode(string icao)
     {
-        var metar = await _metarService.GetRawMetarAsync(icao);
+        var query = new GetMetarQuery(icao);
+        var metar = await _queryHandler.HandleAsync(query);
 
         if (metar is null)
-            return NotFound("Ingen METAR hittades");
+            return NotFound(new { message = $"Ingen METAR hittades för {icao}" });
 
-        return Ok(new { rawMetar = metar });
+        return Ok(metar);
     }
 
     [HttpGet("decode/{metar}")]

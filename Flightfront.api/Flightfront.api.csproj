@@ -13,8 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Flightfront.Application\Flightfront.Application.csproj" />
+    <ProjectReference Include="..\FlightFront.Application\FlightFront.Application.csproj" />
     <ProjectReference Include="..\Flightfront.domain\Flightfront.domain.csproj" />
+    <ProjectReference Include="..\FlightFront.Infrastructur\FlightFront.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
