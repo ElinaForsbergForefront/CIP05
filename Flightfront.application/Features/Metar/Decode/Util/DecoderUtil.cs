@@ -9,12 +9,18 @@ namespace Flightfront.Application.Features.Metar.Decode.Util
 {
     public class DecoderUtil
     {
-        public static String TranslateTime(String time)
+        public static DateTime TranslateTime(String time)
         {
             String day = time.Substring(0, 2);
+            String month = DateTime.Now.Month.ToString("D2");
+            String year = DateTime.Now.Year.ToString();
             String hour = time.Substring(2, 2);
             String minute = time.Substring(4, 2);
-            return day + hour + minute;
+
+            String dateString = $"{year}{month}{day}{hour}{minute}";
+
+            DateTime formattedDate = DateTime.ParseExact(dateString, "yyyyMMddHHmm", null);
+            return formattedDate;
         }
 
         public static String TranslateVisibility(String visibility)
