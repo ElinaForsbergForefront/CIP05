@@ -25,7 +25,7 @@ export default defineConfig([
       semi: ["error", "never"],
       indent: ["error", 2],
       "comma-dangle": ["error", "always-multiline"],
-      "max-len": ["warn", { code: 150 }],
+      "max-len": ["warn", { code: 200 }],
       "arrow-parens": ["error", "as-needed"],
 
       // Code quality

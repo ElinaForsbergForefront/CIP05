@@ -1,11 +1,27 @@
-import { Box, Button, CircularProgress, Container, Paper, Stack, Typography } from "@mui/material"
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Paper,
+  Stack,
+  Typography,
+  useTheme,
+  Fade,
+  Grid,
+} from "@mui/material"
 import { useState } from "react"
-
+import { mockWeatherData } from "../lib/mock_weather_data"
 import icaoCodeOptions from "../lib/icao_mock"
 import { AutoCompleteField } from "@/components/forms/AutoCompleteField"
 import { MetarInput } from "@/components/forms/MetarInput"
 import { InputModeToggle } from "@/components/forms/InputModeToggle"
 import { useGetApiMetarIcao } from "@/api/generated/metar/metar"
+import { StationHeader } from "@/components/weather/StationHeader"
+import { MainWeatherCard } from "@/components/weather/MainWeatherCard"
+import { WeatherMetricCard } from "@/components/weather/WeatherMetricCard"
+import { CloudLayersCard } from "@/components/weather/CloudLayersCard"
+import { HumidityWindCard } from "@/components/weather/HumidityWindCard"
 
 type InputMode = "icao" | "metar"
 
@@ -14,20 +30,29 @@ export function MetarPage() {
   const [icaoCode, setIcaoCode] = useState("")
   const [metarString, setMetarString] = useState("")
   const [searchIcao, setSearchIcao] = useState("")
+  const [showResults, setShowResults] = useState(false)
+  const theme = useTheme()
 
-  // GET METAR Data
   const { data, isLoading, isError, error, refetch } = useGetApiMetarIcao(searchIcao, {
-    query: {
-      enabled: false,
-    },
+    query: { enabled: false },
   })
+
+  console.log(data)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (inputMode === "icao" && icaoCode.length === 4) {
       setSearchIcao(icaoCode.toUpperCase())
+      setShowResults(true)
       setTimeout(() => refetch(), 0)
     }
+  }
+
+  const getFlightCategoryColor = (category: string) => {
+    return (
+      theme.weather.flightCategories[category as keyof typeof theme.weather.flightCategories] ||
+      "#757575"
+    )
   }
 
   return (
@@ -52,10 +77,7 @@ export function MetarPage() {
           elevation={3}
         >
           <Stack spacing={3}>
-            {/* Toggle between ICAO and METAR input */}
             <InputModeToggle inputMode={inputMode} setInputMode={setInputMode} />
-
-            {/* Input Form */}
             <Box component="form" onSubmit={handleSubmit}>
               <Stack spacing={2}>
                 {inputMode === "icao" ? (
@@ -85,21 +107,89 @@ export function MetarPage() {
                 </Button>
               </Stack>
             </Box>
-            <>
-              {data && (
-                <Paper sx={{ p: 2, bgcolor: "success.light" }}>
-                  <Typography variant="h6" gutterBottom>
-                    METAR Result for {searchIcao}:
-                  </Typography>
-                  <Typography
-                    component="pre"
-                    sx={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
-                  >
-                    {JSON.stringify(data, null, 2)}
-                  </Typography>
-                </Paper>
-              )}
-            </>
+
+            {showResults && (
+              <Fade in timeout={600}>
+                <Box>
+                  <StationHeader
+                    station={mockWeatherData.station}
+                    stationName={mockWeatherData.stationName}
+                    flightCategory={mockWeatherData.flightCategory}
+                    observationTime={mockWeatherData.observationTime}
+                    rawMetar={mockWeatherData.rawMetar}
+                    getFlightCategoryColor={getFlightCategoryColor}
+                  />
+
+                  <MainWeatherCard
+                    temperature={mockWeatherData.temperature.value}
+                    conditions={mockWeatherData.conditions}
+                    feelsLike={mockWeatherData.temperature.fahrenheit}
+                    iconPath="/src/assets/weathericons/wi-day-cloudy.svg"
+                  />
+
+                  <Grid container spacing={2} sx={{ mb: 3 }}>
+                    <Grid size={{ xs: 6, md: 3 }}>
+                      <WeatherMetricCard
+                        weatherIconClass="wi wi-thermometer"
+                        label="Temperature"
+                        value={`${mockWeatherData.temperature.value}°C`}
+                        subtitle={`Dewpoint: ${mockWeatherData.dewpoint.value}°C`}
+                        color={theme.weather.temperature}
+                        timeout={700}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 6, md: 3 }}>
+                      <WeatherMetricCard
+                        weatherIconClass="wi wi-strong-wind"
+                        label="Wind"
+                        value={`${mockWeatherData.wind.speed} KT`}
+                        subtitle={`${mockWeatherData.wind.direction}° ${mockWeatherData.wind.directionText} • Gusts: ${mockWeatherData.wind.gust} KT`}
+                        color={theme.weather.wind}
+                        timeout={850}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 6, md: 3 }}>
+                      <WeatherMetricCard
+                        weatherIconClass="wi wi-fog"
+                        label="Visibility"
+                        value={`${mockWeatherData.visibility.value} SM`}
+                        subtitle={mockWeatherData.visibility.description}
+                        color={theme.weather.visibility}
+                        timeout={1000}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 6, md: 3 }}>
+                      <WeatherMetricCard
+                        weatherIconClass="wi wi-barometer"
+                        label="Pressure"
+                        value={`${mockWeatherData.pressure.value}`}
+                        subtitle={`${mockWeatherData.pressure.hpa} hPa`}
+                        color={theme.weather.pressure}
+                        timeout={1150}
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <CloudLayersCard
+                        clouds={mockWeatherData.clouds}
+                        color={theme.weather.clouds}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <HumidityWindCard
+                        humidity={mockWeatherData.humidity}
+                        windDirection={mockWeatherData.wind.direction}
+                        windDirectionText={mockWeatherData.wind.directionText}
+                        humidityColor={theme.weather.humidity}
+                        windColor={theme.weather.wind}
+                      />
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Fade>
+            )}
           </Stack>
         </Paper>
       </Box>

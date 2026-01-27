@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { ThemeProvider } from "@mui/material/styles"
@@ -10,6 +11,7 @@ import CssBaseline from "@mui/material/CssBaseline"
 import { RouterProvider } from "react-router-dom"
 import { router } from "./router/index.tsx"
 import { QueryProvider } from "./providers/QueryProvider.tsx"
+import "weather-icons/css/weather-icons.min.css"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -19,5 +21,5 @@ createRoot(document.getElementById("root")!).render(
         <RouterProvider router={router} />
       </QueryProvider>
     </ThemeProvider>
-  </StrictMode>,
+  </StrictMode>
 )
