@@ -5,7 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Text;
 
 
-namespace Flightfront.application.Features.Metar.Decode.Util
+namespace Flightfront.Application.Features.Metar.Decode.Util
 {
     public class DecoderUtil
     {

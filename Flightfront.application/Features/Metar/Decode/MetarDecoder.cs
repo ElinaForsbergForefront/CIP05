@@ -4,10 +4,10 @@ using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Flightfront.application.Features.Metar.Decode.Util;
+using Flightfront.Application.Features.Metar.Decode.Util;
 using Flightfront.domain.Metar;
 
-namespace Flightfront.application.Features.Metar.Decode
+namespace Flightfront.Application.Features.Metar.Decode
 {
     public class MetarDecoder
     {

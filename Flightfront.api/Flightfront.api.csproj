@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Flightfront.application\Flightfront.application.csproj" />
+    <ProjectReference Include="..\Flightfront.Application\Flightfront.Application.csproj" />
     <ProjectReference Include="..\Flightfront.domain\Flightfront.domain.csproj" />
   </ItemGroup>
 

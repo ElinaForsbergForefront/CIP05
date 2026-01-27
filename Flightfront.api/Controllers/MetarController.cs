@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Flightfront.api.Services;
 using Microsoft.AspNetCore.Mvc;
-using Flightfront.application.Features.Metar.Decode;
+using Flightfront.Application.Features.Metar.Decode;
 namespace Flightfront.Api.Controllers;
 
 [ApiController]
