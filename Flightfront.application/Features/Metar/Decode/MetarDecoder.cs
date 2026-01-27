@@ -118,7 +118,7 @@ namespace Flightfront.Application.Features.Metar.Decode
             if (segment.StartsWith("FEW") || segment.StartsWith("SCT") || segment.StartsWith("BKN") || segment.StartsWith("OVC"))
                 return SegmentType.Clouds;
 
-            if (segment.Contains("%"))
+            if (segment.Contains("/"))
                 return SegmentType.Temperature;
 
             if (segment.StartsWith("Q") || segment.StartsWith("A"))

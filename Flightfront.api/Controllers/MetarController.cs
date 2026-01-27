@@ -29,8 +29,8 @@ public class MetarController : ControllerBase
         return Ok(new { rawMetar = metar });
     }
 
-    [HttpGet("decode/{metar}")]
-    public async Task<IActionResult> GetMetar(string metar)
+    [HttpPost("decode")]
+    public async Task<IActionResult> GetMetar([FromBody] string metar)
     {
         var decoder = new MetarDecoder();
         var decodedMetar = await decoder.getDecodedMetar(metar);
