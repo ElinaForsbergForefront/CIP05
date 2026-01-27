@@ -23,13 +23,10 @@ namespace Flightfront.Application.Features.Metar.Decode.Util
             return formattedDate;
         }
 
-        public static String TranslateVisibility(String visibility)
+        public static int TranslateVisibility(String visibility)
         {
-            if (visibility.Length == 4 && int.TryParse(visibility, out int Meters))
-            {
-                return Meters.ToString();
-            }
-            return visibility;
+            int.TryParse(visibility, out int meters);
+            return meters;
         }
 
         public static MetarWind TranslateWind(String wind)
