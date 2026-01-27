@@ -14,7 +14,6 @@ namespace Flightfront.application.Features.Metar.Decode
         public async Task<ProcessedMetar> getDecodedMetar(string metar)
 
         {
-            Console.WriteLine("Decoding METAR: " + metar);
             var data = new ProcessedMetar();
 
             // remove everything after BECMG or TEMPO

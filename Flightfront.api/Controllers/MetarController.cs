@@ -32,7 +32,6 @@ public class MetarController : ControllerBase
     [HttpGet("decode/{metar}")]
     public async Task<IActionResult> GetMetar(string metar)
     {
-        Console.WriteLine($"Received METAR input: '{metar}'");
         var decoder = new MetarDecoder();
         var decodedMetar = await decoder.getDecodedMetar(metar);
 
