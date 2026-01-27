@@ -163,11 +163,12 @@ namespace Flightfront.Application.Features.Metar.Decode.Util
                     break;
             }
             String height = cloudCondition.Substring(3, 3);
+            int cloudHeight = Int32.TryParse(height, out var temp) ? temp * 100 : 0;
             String type = cloudCondition.Length > 6 ? cloudCondition.Substring(6) : "-";
             return ( new MetarClouds
             {
                 CloudCover = cover,
-                CloudHeight = height,
+                CloudHeight = cloudHeight,
                 CloudType = type
             });
                 
