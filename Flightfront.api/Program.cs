@@ -1,8 +1,7 @@
-using Flightfront.api.Services;
+using Flightfront.api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
 
 // Swagger
@@ -20,13 +19,9 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddHttpClient<MetarService>((sp, client) =>
-{
-    var config = sp.GetRequiredService<IConfiguration>();
-
-    client.BaseAddress = new Uri(config["CheckWx:BaseUrl"]!);
-    client.DefaultRequestHeaders.Add("X-API-Key", config["CheckWx:ApiKey"]);
-});
+//EXTENSIONS
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 
