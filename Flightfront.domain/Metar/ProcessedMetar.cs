@@ -6,7 +6,7 @@ namespace Flightfront.domain.Metar
 {
     public class ProcessedMetar
     {
-        public String Station { get; set; } = "-";
+        public String ICAO { get; set; } = "-";
         public String Time { get; set; } = "-";
         public MetarWind Wind { get; set; } = new MetarWind();
         public String Visibility { get; set; } = "-";
