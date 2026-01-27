@@ -1,5 +1,6 @@
 ﻿using FlightFront.Application.Weather.Queries.GetMetar;
 using Microsoft.AspNetCore.Mvc;
+using Flightfront.Application.Features.Metar.Decode;
 namespace Flightfront.Api.Controllers;
 
 [ApiController]
@@ -23,5 +24,17 @@ public class MetarController : ControllerBase
             return NotFound(new { message = $"Ingen METAR hittades för {icao}" });
 
         return Ok(metar);
+    }
+
+    [HttpGet("decode/{metar}")]
+    public async Task<IActionResult> GetMetar(string metar)
+    {
+        var decoder = new MetarDecoder();
+        var decodedMetar = await decoder.getDecodedMetar(metar);
+
+        if (decodedMetar is null)
+            return NotFound("Kunde inte tolka METAR");
+
+        return Ok(decodedMetar);
     }
 }
