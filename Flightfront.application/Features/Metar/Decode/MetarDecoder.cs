@@ -34,8 +34,8 @@ namespace Flightfront.Application.Features.Metar.Decode
                     case SegmentType.Metar:
                         // Ignore
                         break;
-                    case SegmentType.Station:
-                        data.Station = (segment);
+                    case SegmentType.ICAO:
+                        data.ICAO = (segment);
                         break;
                     case SegmentType.Time:
                         data.Time = DecoderUtil.TranslateTime(segment);
@@ -69,7 +69,7 @@ namespace Flightfront.Application.Features.Metar.Decode
 
             return await Task.FromResult(new ProcessedMetar
             {
-                Station = data.Station,
+                ICAO = data.ICAO,
                 Time = data.Time,
                 Wind = data.Wind,   
                 Visibility = data.Visibility,
@@ -86,7 +86,7 @@ namespace Flightfront.Application.Features.Metar.Decode
         private enum SegmentType
         {
             Metar,
-            Station,
+            ICAO,
             Time,
             Wind,
             Auto,
@@ -128,7 +128,7 @@ namespace Flightfront.Application.Features.Metar.Decode
                 return SegmentType.Weather;
 
             if (segment.Length == 4 && Char.IsLetter(segment[0]) && Char.IsLetter(segment[1]) && Char.IsLetter(segment[2]) && Char.IsLetter(segment[3]))
-                return SegmentType.Station;
+                return SegmentType.ICAO;
 
             return SegmentType.Unknown;
         }
