@@ -1,6 +1,7 @@
 ﻿using FlightFront.Application.Weather.Queries.GetMetar;
+using FlightFront.Application.Weather.Queries.DecodeMetar;
 using Microsoft.AspNetCore.Mvc;
-using Flightfront.Application.Features.Metar.Decode;
+
 namespace Flightfront.Api.Controllers;
 
 [ApiController]
@@ -8,10 +9,14 @@ namespace Flightfront.Api.Controllers;
 public class MetarController : ControllerBase
 {
     private readonly GetMetarQueryHandler _queryHandler;
+    private readonly DecodeMetarQueryHandler _decodeHandler;
 
-    public MetarController(GetMetarQueryHandler handler)
+    public MetarController(
+        GetMetarQueryHandler queryHandler,
+        DecodeMetarQueryHandler decodeHandler)
     {
-        _queryHandler = handler;
+        _queryHandler = queryHandler;
+        _decodeHandler = decodeHandler;
     }
 
     [HttpGet("{icao}")]
@@ -27,13 +32,13 @@ public class MetarController : ControllerBase
     }
 
     [HttpPost("decode")]
-    public async Task<IActionResult> GetMetar([FromBody] string metar)
+    public async Task<ActionResult<DecodedMetarDto>> DecodeMetar([FromBody] string metar)
     {
-        var decoder = new MetarDecoder();
-        var decodedMetar = await decoder.getDecodedMetar(metar);
+        var query = new DecodeMetarQuery(metar);
+        var decodedMetar = await _decodeHandler.HandleAsync(query);
 
         if (decodedMetar is null)
-            return NotFound("Kunde inte tolka METAR");
+            return NotFound(new { message = "Kunde inte tolka METAR" });
 
         return Ok(decodedMetar);
     }

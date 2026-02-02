@@ -1,18 +1,11 @@
 import { Card, CardContent, Stack, Box, Typography, useTheme, Grow } from "@mui/material"
 
 interface MainWeatherCardProps {
-  temperature: number
-  conditions: string
-  feelsLike: number
+  temperature: string
   iconPath: string
 }
 
-export function MainWeatherCard({
-  temperature,
-  conditions,
-  feelsLike,
-  iconPath,
-}: MainWeatherCardProps) {
+export function MainWeatherCard({ temperature, iconPath }: MainWeatherCardProps) {
   const theme = useTheme()
 
   return (
@@ -63,12 +56,6 @@ export function MainWeatherCard({
             <Box flex={1}>
               <Typography variant="h3" fontWeight={700} mb={1}>
                 {temperature}°
-              </Typography>
-              <Typography variant="h6" sx={{ opacity: 0.9 }}>
-                {conditions}
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.8, mt: 0.5 }}>
-                Feels like {feelsLike}°F
               </Typography>
             </Box>
           </Stack>

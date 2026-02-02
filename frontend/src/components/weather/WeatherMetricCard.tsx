@@ -1,10 +1,11 @@
 import { Card, CardContent, Box, Typography, alpha, Grow } from "@mui/material"
+import type { ReactNode } from "react"
 
 interface WeatherMetricCardProps {
   weatherIconClass: string
   label: string
   value: string
-  subtitle?: string
+  subtitle?: string | ReactNode
   color: string
   timeout: number
 }

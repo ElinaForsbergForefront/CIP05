@@ -6,22 +6,23 @@ import {
   Paper,
   Stack,
   Typography,
-  useTheme,
   Fade,
   Grid,
 } from "@mui/material"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 import { AutoCompleteField } from "@/components/forms/AutoCompleteField"
 import { MetarInput } from "@/components/forms/MetarInput"
 import { InputModeToggle } from "@/components/forms/InputModeToggle"
-import { useGetApiMetarIcao } from "@/api/generated/metar/metar"
+import { useGetApiMetarIcao, usePostApiMetarDecode } from "@/api/generated/metar/metar"
 import { StationHeader } from "@/components/weather/StationHeader"
 import { MainWeatherCard } from "@/components/weather/MainWeatherCard"
 import { WeatherMetricCard } from "@/components/weather/WeatherMetricCard"
 import { CloudLayersCard } from "@/components/weather/CloudLayersCard"
 import { HumidityWindCard } from "@/components/weather/HumidityWindCard"
 import { useGetApiAirports } from "@/api/generated/airports/airports"
+import type { DecodedMetarDto } from "@/api/generated/model"
+import { theme } from "@/theme/theme"
 
 type InputMode = "icao" | "metar"
 
@@ -30,33 +31,62 @@ export function MetarPage() {
   const [icaoCode, setIcaoCode] = useState("")
   const [metarString, setMetarString] = useState("")
   const [searchIcao, setSearchIcao] = useState("")
-  const [showResults, setShowResults] = useState(false)
-  const theme = useTheme()
+  const [decodedWeatherData, setDecodedWeatherData] = useState<DecodedMetarDto | null>(null)
 
   // GET Airports Data
   const { data: airports = [], isLoading: isLoadingAirports } = useGetApiAirports({ limit: 150 })
 
-  const { data, isLoading, isError, error, refetch } = useGetApiMetarIcao(searchIcao, {
+  // GET METAR String Data
+  const {
+    data: metarData,
+    isLoading: isLoadingMetar,
+    isError: isMetarError,
+    error: metarError,
+    refetch: refetchMetar,
+  } = useGetApiMetarIcao(searchIcao, {
     query: { enabled: false },
   })
 
-  console.log(data)
+  // POST to decode METAR
+  const {
+    mutate: decodeMetar,
+    isPending: isDecoding,
+    isError: isDecodeError,
+    error: decodeError,
+  } = usePostApiMetarDecode({
+    mutation: {
+      onSuccess: data => {
+        setDecodedWeatherData(data)
+        console.log("Decoded METAR Data:", data)
+      },
+    },
+  })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (inputMode === "icao" && icaoCode.length === 4) {
       setSearchIcao(icaoCode.toUpperCase())
-      setShowResults(true)
-      setTimeout(() => refetch(), 0)
+      setTimeout(() => refetchMetar(), 0)
+    } else if (inputMode === "metar" && metarString.trim().length > 0) {
+      decodeMetar({ data: metarString })
     }
   }
 
-  const getFlightCategoryColor = (category: string) => {
-    return (
-      theme.weather.flightCategories[category as keyof typeof theme.weather.flightCategories] ||
-      "#757575"
-    )
-  }
+  useEffect(() => {
+    if (metarData?.rawMetar) {
+      decodeMetar({ data: metarData.rawMetar })
+    }
+  }, [metarData?.rawMetar, decodeMetar])
+
+  const isError = isMetarError || isDecodeError
+  const error = metarError || decodeError
+  const errorMessage = isError
+    ? (error?.response?.data as { message?: string })?.message ||
+      error?.message ||
+      "Failed to fetch METAR data"
+    : undefined
+
+  const isLoading = isLoadingMetar || isDecoding
 
   return (
     <Container maxWidth="sm">
@@ -89,9 +119,7 @@ export function MetarPage() {
                     icaoCode={icaoCode}
                     setIcaoCode={setIcaoCode}
                     error={isError}
-                    helperText={
-                      isError ? error?.message || "Failed to fetch METAR data" : undefined
-                    }
+                    helperText={errorMessage}
                     isLoading={isLoadingAirports}
                   />
                 ) : (
@@ -112,32 +140,42 @@ export function MetarPage() {
               </Stack>
             </Box>
 
-            {showResults && (
+            {decodedWeatherData && (
               <Fade in timeout={600}>
                 <Box>
-                  <StationHeader
+                  <MainWeatherCard
+                    temperature={
+                      decodedWeatherData.temperature
+                        ? decodedWeatherData.temperature.temperature || "N/A"
+                        : "N/A"
+                    }
+                    iconPath="/src/assets/weathericons/wi-day-cloudy.svg"
+                  />
+
+                  {/* <StationHeader
                     station={mockWeatherData.station}
                     stationName={mockWeatherData.stationName}
                     flightCategory={mockWeatherData.flightCategory}
                     observationTime={mockWeatherData.observationTime}
                     rawMetar={mockWeatherData.rawMetar}
                     getFlightCategoryColor={getFlightCategoryColor}
-                  />
-
-                  <MainWeatherCard
-                    temperature={mockWeatherData.temperature.value}
-                    conditions={mockWeatherData.conditions}
-                    feelsLike={mockWeatherData.temperature.fahrenheit}
-                    iconPath="/src/assets/weathericons/wi-day-cloudy.svg"
-                  />
+                  />*/}
 
                   <Grid container spacing={2} sx={{ mb: 3 }}>
                     <Grid size={{ xs: 6, md: 3 }}>
                       <WeatherMetricCard
                         weatherIconClass="wi wi-thermometer"
                         label="Temperature"
-                        value={`${mockWeatherData.temperature.value}°C`}
-                        subtitle={`Dewpoint: ${mockWeatherData.dewpoint.value}°C`}
+                        value={`${
+                          decodedWeatherData.temperature
+                            ? decodedWeatherData.temperature.temperature || "N/A"
+                            : "N/A"
+                        }°C`}
+                        subtitle={`Dewpoint: ${
+                          decodedWeatherData.temperature
+                            ? decodedWeatherData.temperature.dewPoint || "N/A"
+                            : "N/A"
+                        }°C`}
                         color={theme.weather.temperature}
                         timeout={700}
                       />
@@ -146,8 +184,8 @@ export function MetarPage() {
                       <WeatherMetricCard
                         weatherIconClass="wi wi-strong-wind"
                         label="Wind"
-                        value={`${mockWeatherData.wind.speed} KT`}
-                        subtitle={`${mockWeatherData.wind.direction}° ${mockWeatherData.wind.directionText} • Gusts: ${mockWeatherData.wind.gust} KT`}
+                        value={`${decodedWeatherData.wind ? decodedWeatherData.wind.speed || "N/A" : "N/A"} KT`}
+                        subtitle={`Direction: ${decodedWeatherData.wind ? decodedWeatherData.wind.direction || "N/A" : "N/A"}°`}
                         color={theme.weather.wind}
                         timeout={850}
                       />
@@ -156,8 +194,11 @@ export function MetarPage() {
                       <WeatherMetricCard
                         weatherIconClass="wi wi-fog"
                         label="Visibility"
-                        value={`${mockWeatherData.visibility.value} SM`}
-                        subtitle={mockWeatherData.visibility.description}
+                        value={
+                          decodedWeatherData.visibility && decodedWeatherData.visibility !== 0
+                            ? `${decodedWeatherData.visibility} SM`
+                            : "N/A"
+                        }
                         color={theme.weather.visibility}
                         timeout={1000}
                       />
@@ -166,28 +207,32 @@ export function MetarPage() {
                       <WeatherMetricCard
                         weatherIconClass="wi wi-barometer"
                         label="Pressure"
-                        value={`${mockWeatherData.pressure.value}`}
-                        subtitle={`${mockWeatherData.pressure.hpa} hPa`}
+                        value={
+                          decodedWeatherData.airPressure && decodedWeatherData.airPressure !== "-"
+                            ? `${decodedWeatherData.airPressure} hPa`
+                            : "N/A"
+                        }
                         color={theme.weather.pressure}
                         timeout={1150}
                       />
                     </Grid>
                   </Grid>
-
                   <Grid container spacing={2}>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <CloudLayersCard
-                        clouds={mockWeatherData.clouds}
+                        clouds={
+                          decodedWeatherData.clouds
+                            ? decodedWeatherData.clouds.map(cloud => ({
+                                coverage: cloud.cloudCover || "N/A",
+                                altitude: cloud.cloudHeight || 0,
+                                type:
+                                  cloud.cloudType && cloud.cloudType !== "-"
+                                    ? cloud.cloudType
+                                    : "Unknown",
+                              }))
+                            : []
+                        }
                         color={theme.weather.clouds}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                      <HumidityWindCard
-                        humidity={mockWeatherData.humidity}
-                        windDirection={mockWeatherData.wind.direction}
-                        windDirectionText={mockWeatherData.wind.directionText}
-                        humidityColor={theme.weather.humidity}
-                        windColor={theme.weather.wind}
                       />
                     </Grid>
                   </Grid>

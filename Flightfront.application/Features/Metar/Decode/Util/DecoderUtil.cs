@@ -32,21 +32,23 @@ namespace Flightfront.Application.Features.Metar.Decode.Util
         public static MetarWind TranslateWind(String wind)
         {
             var result = new MetarWind();
-            // Example: 21009G19KT or 060V130 5000
+            // Example: 21009G19KT or 27005KT
             String direction = wind.Substring(0, 3);
             String speedPart = wind.Substring(3);
             String speed = "";
             String gusts = "";
+            
             if (speedPart.Contains("G"))
             {
                 var speedGustParts = speedPart.Split('G');
-                speed = speedGustParts[0];
-                gusts = speedGustParts[1].Replace("KT", "");
+                speed = RemoveLeadingZeros(speedGustParts[0]);
+                gusts = RemoveLeadingZeros(speedGustParts[1].Replace("KT", ""));
             }
             else
             {
-                speed = speedPart.Replace("KT", "");
+                speed = RemoveLeadingZeros(speedPart.Replace("KT", ""));
             }
+            
             result.Direction = direction;
             result.Speed = speed;
             if (!string.IsNullOrEmpty(gusts))
@@ -62,32 +64,43 @@ namespace Flightfront.Application.Features.Metar.Decode.Util
             var parts = tempDewPoint.Split('/');
             if (parts.Length == 2)
             {
+                String temperatureRaw = parts[0];
+                String dewPointRaw = parts[1];
                 
-                String temperature = parts[0];
-                String half = parts[1];
-                String dewPoint = "";
-
-                //WILL BE MOVED
-                if (half.Contains("M"))
+                // Handle temperature
+                String temperature;
+                if (temperatureRaw.StartsWith("M"))
                 {
-                    dewPoint = "-";
-                    dewPoint += half.Substring(half.Length-2);
+                    temperature = "-" + RemoveLeadingZeros(temperatureRaw.Substring(1));
                 }
                 else
                 {
-                    dewPoint += half.Substring(half.Length - 2);
+                    temperature = RemoveLeadingZeros(temperatureRaw);
                 }
-                return ( new MetarTemperature
+                
+                // Handle dew point
+                String dewPoint;
+                if (dewPointRaw.StartsWith("M"))
+                {
+                    dewPoint = "-" + RemoveLeadingZeros(dewPointRaw.Substring(1));
+                }
+                else
+                {
+                    dewPoint = RemoveLeadingZeros(dewPointRaw);
+                }
+                
+                return new MetarTemperature
                 {
                     Temperature = temperature,
                     DewPoint = dewPoint
-                });
+                };
             }
-            return ( new MetarTemperature
+            
+            return new MetarTemperature
             {
                 Temperature = tempDewPoint,
                 DewPoint = "-"
-            });
+            };
         }
 
 
@@ -172,5 +185,16 @@ namespace Flightfront.Application.Features.Metar.Decode.Util
                 
         }
 
+        private static string RemoveLeadingZeros(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return value;
+
+            // Handle edge case: "00" should become "0", not empty string
+            if (int.TryParse(value, out var number))
+                return number.ToString();
+
+            return value;
+        }
     }
 }
