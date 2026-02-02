@@ -30,11 +30,11 @@ export function MetarPage() {
   const [icaoCode, setIcaoCode] = useState("")
   const [metarString, setMetarString] = useState("")
   const [searchIcao, setSearchIcao] = useState("")
+  const [showResults, setShowResults] = useState(false)
+  const theme = useTheme()
 
   // GET Airports Data
   const { data: airports = [], isLoading: isLoadingAirports } = useGetApiAirports({ limit: 150 })
-  const [showResults, setShowResults] = useState(false)
-  const theme = useTheme()
 
   const { data, isLoading, isError, error, refetch } = useGetApiMetarIcao(searchIcao, {
     query: { enabled: false },
