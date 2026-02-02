@@ -1,11 +1,11 @@
 import { Box, Button, CircularProgress, Container, Paper, Stack, Typography } from "@mui/material"
 import { useState } from "react"
 
-import icaoCodeOptions from "../lib/icao_mock"
 import { AutoCompleteField } from "@/components/forms/AutoCompleteField"
 import { MetarInput } from "@/components/forms/MetarInput"
 import { InputModeToggle } from "@/components/forms/InputModeToggle"
 import { useGetApiMetarIcao } from "@/api/generated/metar/metar"
+import { useGetApiAirports } from "@/api/generated/airports/airports"
 
 type InputMode = "icao" | "metar"
 
@@ -14,6 +14,9 @@ export function MetarPage() {
   const [icaoCode, setIcaoCode] = useState("")
   const [metarString, setMetarString] = useState("")
   const [searchIcao, setSearchIcao] = useState("")
+
+  // GET Airports Data
+  const { data: airports = [], isLoading: isLoadingAirports } = useGetApiAirports({ limit: 150 })
 
   // GET METAR Data
   const { data, isLoading, isError, error, refetch } = useGetApiMetarIcao(searchIcao, {
@@ -60,13 +63,14 @@ export function MetarPage() {
               <Stack spacing={2}>
                 {inputMode === "icao" ? (
                   <AutoCompleteField
-                    icaoCodeOptions={icaoCodeOptions}
+                    airports={airports}
                     icaoCode={icaoCode}
                     setIcaoCode={setIcaoCode}
                     error={isError}
                     helperText={
                       isError ? error?.message || "Failed to fetch METAR data" : undefined
                     }
+                    isLoading={isLoadingAirports}
                   />
                 ) : (
                   <MetarInput metarString={metarString} setMetarString={setMetarString} />

@@ -1,46 +1,54 @@
-import icaoCodeOptions from "@/lib/icao_mock"
-import { Autocomplete, Box, TextField } from "@mui/material"
+import { Autocomplete, Box, CircularProgress, TextField } from "@mui/material"
+import type { AirportDto } from "@/api/generated/model"
 
 interface AutoCompleteFieldProps {
-  icaoCodeOptions: typeof icaoCodeOptions
+  airports: AirportDto[]
   icaoCode: string
   setIcaoCode: (code: string) => void
   error?: boolean
   helperText?: string
+  isLoading?: boolean
 }
 
 export const AutoCompleteField = ({
-  icaoCodeOptions,
+  airports,
   icaoCode,
   setIcaoCode,
   error,
   helperText,
+  isLoading,
 }: AutoCompleteFieldProps) => {
   return (
     <Autocomplete
       disablePortal
       autoHighlight
-      options={icaoCodeOptions}
-      value={icaoCodeOptions.find(option => option.code === icaoCode) || null}
-      onChange={(_event, value) => setIcaoCode(value?.code || "")}
-      getOptionLabel={icaoCodeOption => `${icaoCodeOption.code}`}
-      renderOption={(props, icaoCodeOption) => {
-        const { key, ...icaoCodeProps } = props
+      options={airports}
+      value={airports.find(option => option.icao === icaoCode) || null}
+      onChange={(_event, value) => setIcaoCode(value?.icao || "")}
+      getOptionLabel={airport => airport.icao || ""}
+      isOptionEqualToValue={(option, value) => option.icao === value.icao}
+      loading={isLoading}
+      renderOption={(props, airport) => {
+        const { key, ...airportProps } = props
+        const countryCode = airport.country?.toLowerCase().slice(0, 2) || "un"
         return (
           <Box
             key={key}
             component="li"
             sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-            {...icaoCodeProps}
+            {...airportProps}
           >
             <img
               loading="lazy"
               width="20"
-              srcSet={`https://flagcdn.com/w40/${icaoCodeOption.iso.toLowerCase()}.png 2x`}
-              src={`https://flagcdn.com/w20/${icaoCodeOption.iso.toLowerCase()}.png`}
+              srcSet={`https://flagcdn.com/w40/${countryCode}.png 2x`}
+              src={`https://flagcdn.com/w20/${countryCode}.png`}
               alt=""
+              onError={e => {
+                e.currentTarget.style.display = "none"
+              }}
             />
-            {icaoCodeOption.name} ({icaoCodeOption.code})
+            {airport.name} ({airport.icao}){airport.municipality && ` - ${airport.municipality}`}
           </Box>
         )
       }}
@@ -54,6 +62,15 @@ export const AutoCompleteField = ({
             htmlInput: {
               ...params.inputProps,
               autoComplete: "new-password",
+            },
+            input: {
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
             },
           }}
         />
