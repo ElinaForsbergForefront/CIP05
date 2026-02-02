@@ -1,4 +1,5 @@
 ﻿using FlightFront.Application.Airports.Interfaces;
+using FlightFront.Application.Airports.Queries.GetAllAirports;
 using FlightFront.Application.Airports.Queries.SearchAirports;
 using FlightFront.Application.Weather.Interfaces;
 using FlightFront.Application.Weather.Queries.GetMetar;
@@ -12,6 +13,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<SearchAirportsQueryHandler>();
+        services.AddScoped<GetAllAirportsQueryHandler>();
         services.AddScoped<GetMetarQueryHandler>();
 
         return services;
