@@ -11,8 +11,7 @@ import {
   Grid,
 } from "@mui/material"
 import { useState } from "react"
-import { mockWeatherData } from "../lib/mock_weather_data"
-import icaoCodeOptions from "../lib/icao_mock"
+
 import { AutoCompleteField } from "@/components/forms/AutoCompleteField"
 import { MetarInput } from "@/components/forms/MetarInput"
 import { InputModeToggle } from "@/components/forms/InputModeToggle"
@@ -22,6 +21,7 @@ import { MainWeatherCard } from "@/components/weather/MainWeatherCard"
 import { WeatherMetricCard } from "@/components/weather/WeatherMetricCard"
 import { CloudLayersCard } from "@/components/weather/CloudLayersCard"
 import { HumidityWindCard } from "@/components/weather/HumidityWindCard"
+import { useGetApiAirports } from "@/api/generated/airports/airports"
 
 type InputMode = "icao" | "metar"
 
@@ -30,6 +30,9 @@ export function MetarPage() {
   const [icaoCode, setIcaoCode] = useState("")
   const [metarString, setMetarString] = useState("")
   const [searchIcao, setSearchIcao] = useState("")
+
+  // GET Airports Data
+  const { data: airports = [], isLoading: isLoadingAirports } = useGetApiAirports({ limit: 150 })
   const [showResults, setShowResults] = useState(false)
   const theme = useTheme()
 
@@ -82,13 +85,14 @@ export function MetarPage() {
               <Stack spacing={2}>
                 {inputMode === "icao" ? (
                   <AutoCompleteField
-                    icaoCodeOptions={icaoCodeOptions}
+                    airports={airports}
                     icaoCode={icaoCode}
                     setIcaoCode={setIcaoCode}
                     error={isError}
                     helperText={
                       isError ? error?.message || "Failed to fetch METAR data" : undefined
                     }
+                    isLoading={isLoadingAirports}
                   />
                 ) : (
                   <MetarInput metarString={metarString} setMetarString={setMetarString} />
