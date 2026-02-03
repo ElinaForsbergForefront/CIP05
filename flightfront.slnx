@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="Flightfront.api/Flightfront.api.csproj" />
+  <Project Path="FlightFront.Application.Tests/FlightFront.Application.Tests.csproj" Id="16f9dd47-0ba2-4646-9dea-16fb623b3a3d" />
   <Project Path="FlightFront.Application/FlightFront.Application.csproj" Id="30cb66a5-a172-4313-9623-5365dc233f93" />
   <Project Path="Flightfront.domain/Flightfront.domain.csproj" />
   <Project Path="FlightFront.Infrastructur/FlightFront.Infrastructure.csproj" Id="0b61da77-1201-4553-aaab-6f9436d958ef" />

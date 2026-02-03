@@ -14,6 +14,12 @@ namespace Flightfront.Application.Features.Metar.Decode
         public async Task<ProcessedMetar> getDecodedMetar(string metar)
 
         {
+            // Validate that the METAR string contains METAR or SPECI
+            if (!metar.Contains("METAR") && !metar.Contains("SPECI"))
+            {
+                throw new ArgumentException("Invalid METAR string: must contain 'METAR' or 'SPECI'");
+            }
+
             var data = new ProcessedMetar();
 
             // remove everything after BECMG or TEMPO
@@ -112,10 +118,10 @@ namespace Flightfront.Application.Features.Metar.Decode
             if (segment.EndsWith("KT"))
                 return SegmentType.Wind;
 
-            if (segment.Length == 4 && Char.IsDigit(segment[0]) && Char.IsDigit(segment[1]) && Char.IsDigit(segment[2]) && Char.IsDigit(segment[3]))
+            if (segment.Length == 4 && Char.IsDigit(segment[0]) && Char.IsDigit(segment[1]) && Char.IsDigit(segment[2]) && Char.IsDigit(segment[3]) || segment.Equals("CAVOK"))
                 return SegmentType.Visibility;
 
-            if (segment.StartsWith("FEW") || segment.StartsWith("SCT") || segment.StartsWith("BKN") || segment.StartsWith("OVC"))
+            if (segment.StartsWith("FEW") || segment.StartsWith("SCT") || segment.StartsWith("BKN") || segment.StartsWith("OVC") || segment.StartsWith("NSC") || segment.StartsWith("SKC") || segment.StartsWith("CLR") || segment.StartsWith("NCD"))
                 return SegmentType.Clouds;
 
             if (segment.Contains("/"))
@@ -124,7 +130,7 @@ namespace Flightfront.Application.Features.Metar.Decode
             if (segment.StartsWith("Q") || segment.StartsWith("A"))
                 return SegmentType.AirPressure;
 
-            if (segment.StartsWith("-") || segment.StartsWith("+") || segment.Length == 1)
+            if (segment.StartsWith("-") || segment.StartsWith("+") || segment.Length == 1 || segment == "FG" || segment == "BR" || segment == "DZ" || segment == "TS" || segment == "RA" || segment == "SN")
                 return SegmentType.Weather;
 
             if (segment.Length == 4 && Char.IsLetter(segment[0]) && Char.IsLetter(segment[1]) && Char.IsLetter(segment[2]) && Char.IsLetter(segment[3]))
