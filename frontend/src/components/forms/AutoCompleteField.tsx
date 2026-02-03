@@ -20,13 +20,27 @@ export const AutoCompleteField = ({
 }: AutoCompleteFieldProps) => {
   return (
     <Autocomplete
+      freeSolo
       disablePortal
       autoHighlight
       options={airports}
       value={airports.find(option => option.icao === icaoCode) || null}
-      onChange={(_event, value) => setIcaoCode(value?.icao || "")}
-      getOptionLabel={airport => airport.icao || ""}
-      isOptionEqualToValue={(option, value) => option.icao === value.icao}
+      onChange={(_event, value) => {
+        if (typeof value === "string") {
+          setIcaoCode(value.toUpperCase())
+        } else {
+          setIcaoCode(value?.icao || "")
+        }
+      }}
+      onInputChange={(_event, newInputValue, reason) => {
+        if (reason === "input") {
+          setIcaoCode(newInputValue.toUpperCase())
+        }
+      }}
+      getOptionLabel={option => (typeof option === "string" ? option : option.icao || "")}
+      isOptionEqualToValue={(option, value) =>
+        typeof value === "string" ? option.icao === value : option.icao === value.icao
+      }
       loading={isLoading}
       renderOption={(props, airport) => {
         const { key, ...airportProps } = props
