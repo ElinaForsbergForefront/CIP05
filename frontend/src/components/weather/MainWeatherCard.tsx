@@ -52,7 +52,7 @@ export function MainWeatherCard({ temperature, iconClass }: MainWeatherCardProps
             </Box>
             <Box flex={1}>
               <Typography variant="h3" fontWeight={700} mb={1}>
-                {temperature}°
+                {temperature}°C
               </Typography>
             </Box>
           </Stack>

@@ -204,7 +204,7 @@ export function MetarPage() {
                     </Grid>
                     <Grid size={{ xs: 6, md: 3 }}>
                       <WeatherMetricCard
-                        weatherIconClass="wi wi-barometer"
+                        weatherIconClass="wi wi-thermometer-exterior"
                         label="Pressure"
                         value={
                           decodedWeatherData.airPressure && decodedWeatherData.airPressure !== "-"
