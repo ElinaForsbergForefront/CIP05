@@ -15,14 +15,13 @@ import { AutoCompleteField } from "@/components/forms/AutoCompleteField"
 import { MetarInput } from "@/components/forms/MetarInput"
 import { InputModeToggle } from "@/components/forms/InputModeToggle"
 import { useGetApiMetarIcao, usePostApiMetarDecode } from "@/api/generated/metar/metar"
-import { StationHeader } from "@/components/weather/StationHeader"
 import { MainWeatherCard } from "@/components/weather/MainWeatherCard"
 import { WeatherMetricCard } from "@/components/weather/WeatherMetricCard"
 import { CloudLayersCard } from "@/components/weather/CloudLayersCard"
-import { HumidityWindCard } from "@/components/weather/HumidityWindCard"
 import { useGetApiAirports } from "@/api/generated/airports/airports"
 import type { DecodedMetarDto } from "@/api/generated/model"
 import { theme } from "@/theme/theme"
+import { getWeatherIconClass } from "@/utils/weatherIconMapper"
 
 type InputMode = "icao" | "metar"
 
@@ -149,7 +148,7 @@ export function MetarPage() {
                         ? decodedWeatherData.temperature.temperature || "N/A"
                         : "N/A"
                     }
-                    iconPath="/src/assets/weathericons/wi-day-cloudy.svg"
+                    iconClass={getWeatherIconClass(decodedWeatherData)}
                   />
 
                   {/* <StationHeader
@@ -223,13 +222,13 @@ export function MetarPage() {
                         clouds={
                           decodedWeatherData.clouds
                             ? decodedWeatherData.clouds.map(cloud => ({
-                                coverage: cloud.cloudCover || "N/A",
-                                altitude: cloud.cloudHeight || 0,
-                                type:
+                              coverage: cloud.cloudCover || "N/A",
+                              altitude: cloud.cloudHeight || 0,
+                              type:
                                   cloud.cloudType && cloud.cloudType !== "-"
                                     ? cloud.cloudType
                                     : "Unknown",
-                              }))
+                            }))
                             : []
                         }
                         color={theme.weather.clouds}

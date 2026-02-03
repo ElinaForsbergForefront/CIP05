@@ -2,10 +2,10 @@ import { Card, CardContent, Stack, Box, Typography, useTheme, Grow } from "@mui/
 
 interface MainWeatherCardProps {
   temperature: string
-  iconPath: string
+  iconClass: string
 }
 
-export function MainWeatherCard({ temperature, iconPath }: MainWeatherCardProps) {
+export function MainWeatherCard({ temperature, iconClass }: MainWeatherCardProps) {
   const theme = useTheme()
 
   return (
@@ -43,13 +43,10 @@ export function MainWeatherCard({ temperature, iconPath }: MainWeatherCardProps)
                 justifyContent: "center",
               }}
             >
-              <img
-                src={iconPath}
-                alt="Weather condition"
+              <i
+                className={`wi ${iconClass}`}
                 style={{
-                  width: "100%",
-                  height: "100%",
-                  filter: "brightness(0) invert(1)",
+                  fontSize: "64px",
                 }}
               />
             </Box>

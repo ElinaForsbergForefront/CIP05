@@ -34,12 +34,12 @@ axios.interceptors.response.use(
     }
 
     return Promise.reject(error)
-  }
+  },
 )
 
 export const customAxiosInstance = <T>(
   config: AxiosRequestConfig,
-  options?: AxiosRequestConfig
+  options?: AxiosRequestConfig,
 ): Promise<T> => {
   const source = Axios.CancelToken.source()
 
