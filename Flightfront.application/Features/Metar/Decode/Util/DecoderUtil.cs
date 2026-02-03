@@ -25,6 +25,10 @@ namespace Flightfront.Application.Features.Metar.Decode.Util
 
         public static int TranslateVisibility(String visibility)
         {
+            if(visibility == "CAVOK")
+            {
+                return 9999;
+            }
             int.TryParse(visibility, out int meters);
             return meters;
         }
@@ -32,26 +36,35 @@ namespace Flightfront.Application.Features.Metar.Decode.Util
         public static MetarWind TranslateWind(String wind)
         {
             var result = new MetarWind();
-            // Example: 21009G19KT or 060V130 5000
-            String direction = wind.Substring(0, 3);
-            String speedPart = wind.Substring(3);
-            String speed = "";
-            String gusts = "";
-            if (speedPart.Contains("G"))
+            
+            if (wind.StartsWith("VRB"))
             {
-                var speedGustParts = speedPart.Split('G');
-                speed = speedGustParts[0];
-                gusts = speedGustParts[1].Replace("KT", "");
+                result.Direction = "Variable";
+                String speedPart = wind.Substring(3).Replace("KT", "");
+                result.Speed = speedPart;
             }
             else
             {
-                speed = speedPart.Replace("KT", "");
-            }
-            result.Direction = direction;
-            result.Speed = speed;
-            if (!string.IsNullOrEmpty(gusts))
-            {
-                result.Gusts = gusts;
+                String direction = wind.Substring(0, 3);
+                String speedPart = wind.Substring(3);
+                String speed = "";
+                String gusts = "";
+                if (speedPart.Contains("G"))
+                {
+                    var speedGustParts = speedPart.Split('G');
+                    speed = speedGustParts[0];
+                    gusts = speedGustParts[1].Replace("KT", "");
+                }
+                else
+                {
+                    speed = speedPart.Replace("KT", "");
+                }
+                result.Direction = direction;
+                result.Speed = speed;
+                if (!string.IsNullOrEmpty(gusts))
+                {
+                    result.Gusts = gusts;
+                }
             }
             return result;
         }
@@ -93,8 +106,6 @@ namespace Flightfront.Application.Features.Metar.Decode.Util
 
         public static String TranslateWeather(String weather)
         {
-            // BEHÖVER VI ALLA TYP 30 VÄDERKODER? PLZ NO
-            // WILL BE MOVED
             switch (weather)
             {
                 case "-RA":
@@ -139,8 +150,6 @@ namespace Flightfront.Application.Features.Metar.Decode.Util
 
         public static MetarClouds TranslateClouds(String cloudCondition)
         {
-            //HAVE TO GET DIFFERENT TYPES ASWELL :(((((
-            // WILL BE MOVED
             String cover = cloudCondition.Substring(0, 3);
             switch (cover)
             {
@@ -155,6 +164,16 @@ namespace Flightfront.Application.Features.Metar.Decode.Util
                     break;
                 case "OVC":
                     cover = "Overcast";
+                    break;
+                case "NSC":
+                    cover = "No significant clouds";
+                    break;
+                case "SKC":
+                    cover = "No cloud cover";
+                    break;
+                case "CLR":
+                case "NCD":
+                    cover = "No clouds measured";
                     break;
                 default:
                     cover = "-";
